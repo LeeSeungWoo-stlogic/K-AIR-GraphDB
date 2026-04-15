@@ -1,0 +1,50 @@
+# ============================================
+# K-AIR-GraphDB .gitignore
+# ============================================
+
+# 기존 K-AIR 소스코드 (외부 레포지토리)
+repos/
+
+# Neo4j 덤프/샘플 데이터 (대용량)
+sample/
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+*.egg
+dist/
+build/
+.eggs/
+
+# 환경 설정 / 시크릿
+.env
+.env.*
+!.env.example
+
+# pytest / IDE
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Docker volumes (로컬)
+docker/K-AIR-GraphDB/pgdata/
+docker/age-pgvector/pgdata/
+
+# Virtual environments
+venv/
+.venv/
+env/
+
+# Node (if any)
+node_modules/

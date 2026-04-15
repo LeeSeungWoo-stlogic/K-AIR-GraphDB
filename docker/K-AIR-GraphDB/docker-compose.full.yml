@@ -1,0 +1,88 @@
+services:
+  # ── K-AIR-GraphDB (PostgreSQL + Apache AGE + pgvector) ──
+  kair-graphdb:
+    build: .
+    container_name: kair-graphdb
+    ports:
+      - "15432:5432"
+    environment:
+      POSTGRES_DB: kair_graphdb
+      POSTGRES_USER: kair
+      POSTGRES_PASSWORD: kair_pass
+    volumes:
+      - ./init:/docker-entrypoint-initdb.d
+      - kair_graphdb_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U kair -d kair_graphdb"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - kair-net
+
+  # ── K-AIR Domain Layer ──
+  kair-domain-layer:
+    build:
+      context: ../../services/K-AIR-domain-layer
+      dockerfile: Dockerfile
+    container_name: kair-domain-layer
+    ports:
+      - "8002:8002"
+    environment:
+      GRAPHDB__HOST: kair-graphdb
+      GRAPHDB__PORT: 5432
+      GRAPHDB__DATABASE: kair_graphdb
+      GRAPHDB__USER: kair
+      GRAPHDB__PASSWORD: kair_pass
+    depends_on:
+      kair-graphdb:
+        condition: service_healthy
+    networks:
+      - kair-net
+
+  # ── K-AIR Text2SQL ──
+  kair-text2sql:
+    build:
+      context: ../../services/K-AIR-text2sql
+      dockerfile: Dockerfile
+    container_name: kair-text2sql
+    ports:
+      - "8000:8000"
+    environment:
+      GRAPHDB__HOST: kair-graphdb
+      GRAPHDB__PORT: 5432
+      GRAPHDB__DATABASE: kair_graphdb
+      GRAPHDB__USER: kair
+      GRAPHDB__PASSWORD: kair_pass
+    depends_on:
+      kair-graphdb:
+        condition: service_healthy
+    networks:
+      - kair-net
+
+  # ── K-AIR Analyzer ──
+  kair-analyzer:
+    build:
+      context: ../../services/K-AIR-analyzer
+      dockerfile: Dockerfile
+    container_name: kair-analyzer
+    ports:
+      - "5502:5502"
+    environment:
+      GRAPHDB__HOST: kair-graphdb
+      GRAPHDB__PORT: 5432
+      GRAPHDB__DATABASE: kair_graphdb
+      GRAPHDB__USER: kair
+      GRAPHDB__PASSWORD: kair_pass
+    depends_on:
+      kair-graphdb:
+        condition: service_healthy
+    networks:
+      - kair-net
+
+volumes:
+  kair_graphdb_data:
+
+networks:
+  kair-net:
+    driver: bridge

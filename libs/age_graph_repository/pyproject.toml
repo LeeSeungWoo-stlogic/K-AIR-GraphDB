@@ -1,0 +1,26 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "age-graph-repository"
+version = "0.1.0"
+description = "Apache AGE 기반 온톨로지 그래프 저장소 — K-AIR Neo4jService 대체"
+requires-python = ">=3.10"
+dependencies = [
+    "asyncpg>=0.29",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0",
+    "pytest-asyncio>=0.23",
+]
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["age_graph_repository*"]
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+testpaths = ["tests"]

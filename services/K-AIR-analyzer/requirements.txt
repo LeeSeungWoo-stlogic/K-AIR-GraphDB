@@ -1,0 +1,26 @@
+# K-AIR Analyzer 의존성
+# Neo4j 드라이버 제거 — K-AIR-GraphDB(asyncpg) 사용
+
+fastapi>=0.109.0
+uvicorn>=0.27.0
+pydantic>=2.5.0
+pydantic-settings>=2.1.0
+python-dotenv>=1.0.0
+httpx>=0.26.0
+aiofiles>=24.1.0
+
+# K-AIR-GraphDB 연결
+asyncpg>=0.29.0
+
+# K-AIR-GraphDB SDK (로컬 설치)
+# pip install -e ../../libs/age_graph_repository
+
+# LLM
+openai>=1.10.0
+langchain>=0.2.0
+langchain-openai>=0.1.0
+
+# 데이터 처리
+pandas>=2.0.0
+numpy>=1.24.0
+pyyaml>=6.0.0

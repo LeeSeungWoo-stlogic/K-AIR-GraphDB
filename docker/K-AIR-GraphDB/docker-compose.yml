@@ -1,0 +1,21 @@
+services:
+  kair-graphdb:
+    build: .
+    container_name: kair-graphdb
+    ports:
+      - "15432:5432"
+    environment:
+      POSTGRES_DB: kair_graphdb
+      POSTGRES_USER: kair
+      POSTGRES_PASSWORD: kair_pass
+    volumes:
+      - ./init:/docker-entrypoint-initdb.d
+      - kair_graphdb_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U kair -d kair_graphdb"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  kair_graphdb_data:
