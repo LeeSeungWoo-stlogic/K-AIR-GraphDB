@@ -420,3 +420,26 @@ class AgeGraphRepository:
             cypher = "MATCH ()-[r]->() RETURN count(r)"
         val = await self._conn.execute_cypher_scalar(cypher)
         return int(parse_agtype(val) or 0)
+
+    # ------------------------------------------------------------------
+    # 물리 메타 (카탈로그 dict → :Table / :Column / FK_TO)
+    # ------------------------------------------------------------------
+
+    async def apply_physical_meta_catalog(
+        self,
+        catalog: Dict[str, Any],
+        *,
+        graph: Optional[str] = None,
+    ) -> Dict[str, int]:
+        """카탈로그 dict를 AGE 물리층에 반영한다.
+
+        메타 인제스트 등에서 생성한 스냅샷과 동일한 키 구조를 기대한다.
+        속성 맵은 :mod:`physical_meta.physical_cypher` 의 계약 빌더를 경유한다.
+        """
+        from .physical_meta.physical_cypher import build_physical_meta_refresh
+
+        statements, summary = build_physical_meta_refresh(catalog)
+        g = graph or self._conn.graph_name
+        for stmt in statements:
+            await self._conn.execute_cypher(stmt, graph=g)
+        return summary

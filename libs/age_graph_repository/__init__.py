@@ -5,6 +5,7 @@ K-AIR domain-layer의 Neo4jService와 동일한 인터페이스를 제공하되,
 백엔드를 PostgreSQL + Apache AGE로 교체한다.
 
 포함 모듈:
+  - physical_meta: AGE 물리 계층(Table/Column/FK_TO) 속성 계약·빌더
   - AgeConnection: asyncpg 비동기 연결 관리
   - AgeGraphRepository: 온톨로지 그래프 CRUD + 경로 탐색
   - CatalogAdapter: Argus Catalog 연동 (AGE ↔ RDB 크로스 쿼리)
