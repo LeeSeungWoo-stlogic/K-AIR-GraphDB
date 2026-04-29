@@ -111,7 +111,7 @@ def build_physical_meta_refresh(
             db_exists=True,
         )
         p = dict(tprops)
-        p["_neo4j_eid"] = teid
+        p["_physical_vertex_id"] = teid
         lit = _build_age_props(p)
         statements.append(f"CREATE (: `Table` {lit})")
         summary["tables"] += 1
@@ -138,15 +138,15 @@ def build_physical_meta_refresh(
                 is_unique=is_unique,
             )
             p2 = dict(cprops)
-            p2["_neo4j_eid"] = ceid
+            p2["_physical_vertex_id"] = ceid
             lit_c = _build_age_props(p2)
             statements.append(f"CREATE (: `Column` {lit_c})")
             summary["columns"] += 1
             esc_te = _age_escape_str(teid)
             esc_ce = _age_escape_str(ceid)
             statements.append(
-                f"MATCH (a), (b) WHERE a._neo4j_eid = '{esc_te}' "
-                f"AND b._neo4j_eid = '{esc_ce}' CREATE (a)-[:HAS_COLUMN {{}}]->(b)"
+                f"MATCH (a), (b) WHERE a._physical_vertex_id = '{esc_te}' "
+                f"AND b._physical_vertex_id = '{esc_ce}' CREATE (a)-[:HAS_COLUMN {{}}]->(b)"
             )
             summary["has_column"] += 1
 
@@ -166,8 +166,8 @@ def build_physical_meta_refresh(
         esc_f = _age_escape_str(from_eid)
         esc_t = _age_escape_str(to_eid)
         statements.append(
-            f"MATCH (a), (b) WHERE a._neo4j_eid = '{esc_f}' "
-            f"AND b._neo4j_eid = '{esc_t}' CREATE (a)-[:FK_TO {prop_lit}]->(b)"
+            f"MATCH (a), (b) WHERE a._physical_vertex_id = '{esc_f}' "
+            f"AND b._physical_vertex_id = '{esc_t}' CREATE (a)-[:FK_TO {prop_lit}]->(b)"
         )
         summary["fk_to"] += 1
 

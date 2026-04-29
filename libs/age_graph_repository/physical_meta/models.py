@@ -14,7 +14,7 @@ def column_vertex_eid(db_label: str, schema: str, table_name: str, column: str) 
 
 @dataclass
 class TablePhysicalProps:
-    """:Table 물리 본문 + 운영 확장(_meta_ingest, _neo4j_eid)."""
+    """:Table 물리 본문 + 운영 확장(_meta_ingest, _physical_vertex_id)."""
 
     name: str
     schema: str
@@ -24,7 +24,7 @@ class TablePhysicalProps:
     db_exists: bool
     datasource: str
     _meta_ingest: bool
-    _neo4j_eid: str
+    _physical_vertex_id: str
 
     def to_age_property_map(self) -> dict[str, Any]:
         return {k: v for k, v in asdict(self).items()}
@@ -44,7 +44,7 @@ class ColumnPhysicalProps:
     column_default: str
     is_unique: bool
     _meta_ingest: bool
-    _neo4j_eid: str
+    _physical_vertex_id: str
 
     def to_age_property_map(self) -> dict[str, Any]:
         return {k: v for k, v in asdict(self).items()}

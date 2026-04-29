@@ -25,7 +25,7 @@ def build_table_physical_props(
         db_exists=db_exists,
         datasource=datasource,
         _meta_ingest=True,
-        _neo4j_eid=eid,
+        _physical_vertex_id=eid,
     ).to_age_property_map()
 
 
@@ -56,7 +56,7 @@ def build_column_physical_props(
         column_default=column_default,
         is_unique=is_unique,
         _meta_ingest=True,
-        _neo4j_eid=eid,
+        _physical_vertex_id=eid,
     ).to_age_property_map()
 
 
