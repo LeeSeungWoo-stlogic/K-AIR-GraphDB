@@ -2,7 +2,25 @@
 
 from __future__ import annotations
 
-from .models import ColumnPhysicalProps, FkToEdgeProps, TablePhysicalProps, column_vertex_eid, table_vertex_eid
+from .models import (
+    ColumnPhysicalProps,
+    DatabasePhysicalProps,
+    FkToEdgeProps,
+    TablePhysicalProps,
+    column_vertex_eid,
+    database_vertex_eid,
+    table_vertex_eid,
+)
+
+
+def build_database_physical_props(*, meta_db_label: str, source_engine: str) -> dict[str, str | bool]:
+    eid = database_vertex_eid(meta_db_label)
+    return DatabasePhysicalProps(
+        meta_db_label=meta_db_label,
+        source_engine=source_engine,
+        _meta_ingest=True,
+        _physical_vertex_id=eid,
+    ).to_age_property_map()
 
 
 def build_table_physical_props(

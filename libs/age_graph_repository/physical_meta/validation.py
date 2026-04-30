@@ -2,7 +2,16 @@ from __future__ import annotations
 
 from typing import Any
 
-from .models import frozen_column_keys, frozen_fk_to_keys, frozen_table_keys
+from .models import frozen_column_keys, frozen_database_keys, frozen_fk_to_keys, frozen_table_keys
+
+
+def validate_age_database_props(props: dict[str, Any]) -> None:
+    ks = frozenset(props.keys())
+    allowed = frozen_database_keys()
+    if ks != allowed:
+        missing = sorted(allowed - ks)
+        extra = sorted(ks - allowed)
+        raise ValueError(f"Database props key mismatch: missing={missing!r} extra={extra!r}")
 
 
 def validate_age_table_props(props: dict[str, Any]) -> None:

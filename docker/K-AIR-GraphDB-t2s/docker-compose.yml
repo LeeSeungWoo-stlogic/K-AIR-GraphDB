@@ -1,0 +1,27 @@
+services:
+  kair-graphdb-t2s:
+    # Dockerfile(PG16 + Apache AGE 1.5.0 + pgvector 0.7.4)는 기존 K-AIR-GraphDB 재사용
+    build:
+      context: ../K-AIR-GraphDB
+      dockerfile: Dockerfile
+    image: kair-graphdb-t2s:pg16-age1.5.0-pgvector0.7.4
+    container_name: kair-graphdb-t2s
+    ports:
+      - "15433:5432"
+    environment:
+      POSTGRES_DB: kair_graphdb_t2s
+      POSTGRES_USER: kair
+      POSTGRES_PASSWORD: kair_pass
+    volumes:
+      # init 스크립트도 기존 K-AIR-GraphDB 것을 ro로 공유
+      - ../K-AIR-GraphDB/init:/docker-entrypoint-initdb.d:ro
+      - kair_graphdb_t2s_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U kair -d kair_graphdb_t2s"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  kair_graphdb_t2s_data:
+    name: kair_graphdb_t2s_data

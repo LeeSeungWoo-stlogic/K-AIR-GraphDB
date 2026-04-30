@@ -8,8 +8,13 @@ from __future__ import annotations
 import json
 from typing import Any
 
-from .from_catalog import build_column_physical_props, build_fk_edge_props, build_table_physical_props
-from .models import column_vertex_eid, table_vertex_eid
+from .from_catalog import (
+    build_column_physical_props,
+    build_database_physical_props,
+    build_fk_edge_props,
+    build_table_physical_props,
+)
+from .models import column_vertex_eid, database_vertex_eid, table_vertex_eid
 
 
 def _json_default(o: Any) -> str:
@@ -76,19 +81,29 @@ def _column_default_str(r: dict[str, Any]) -> str:
 def build_physical_meta_refresh(
     catalog: dict[str, Any],
 ) -> tuple[list[str], dict[str, int]]:
-    """_meta_ingest 마킹 Table/Column/FK_TO 재적재용 Cypher 목록.
+    """_meta_ingest 마킹 Database/Table/Column 및 HAS_TABLE/HAS_COLUMN/FK_TO 재적재용 Cypher.
+
+    정책: 동일 meta_db_label 스냅샷에 대해 Column → Table → Database 순 삭제 후 재생성.
 
     Returns:
         (cypher_inner_statements, summary_counts)
     """
     db_label = catalog["meta_db_label"]
     schema = catalog["schema"]
+    source_engine = str(catalog.get("source_engine") or "unknown")
     pks = {tuple(pair) for pair in catalog["primary_keys"]}
     fk_list = catalog.get("foreign_keys") or []
     table_names = {t["name"] for t in catalog["tables"]}
 
     statements: list[str] = []
-    summary = {"tables": 0, "columns": 0, "has_column": 0, "fk_to": 0}
+    summary = {
+        "database": 0,
+        "tables": 0,
+        "columns": 0,
+        "has_table": 0,
+        "has_column": 0,
+        "fk_to": 0,
+    }
 
     statements.append(
         "MATCH (c:Column) WHERE c._meta_ingest = true DETACH DELETE c"
@@ -96,6 +111,17 @@ def build_physical_meta_refresh(
     statements.append(
         "MATCH (t:Table) WHERE t._meta_ingest = true DETACH DELETE t"
     )
+    esc_lbl = _age_escape_str(db_label)
+    statements.append(
+        "MATCH (d:Database) WHERE d._meta_ingest = true "
+        f"AND d.meta_db_label = '{esc_lbl}' DETACH DELETE d"
+    )
+
+    deid = database_vertex_eid(db_label)
+    dprops = build_database_physical_props(meta_db_label=db_label, source_engine=source_engine)
+    plit_d = _build_age_props(dict(dprops))
+    statements.append(f"CREATE (: `Database` {plit_d})")
+    summary["database"] = 1
 
     for tbl in catalog["tables"]:
         tname = tbl["name"]
@@ -115,6 +141,14 @@ def build_physical_meta_refresh(
         lit = _build_age_props(p)
         statements.append(f"CREATE (: `Table` {lit})")
         summary["tables"] += 1
+
+        esc_de = _age_escape_str(deid)
+        esc_te = _age_escape_str(teid)
+        statements.append(
+            f"MATCH (a), (b) WHERE a._physical_vertex_id = '{esc_de}' "
+            f"AND b._physical_vertex_id = '{esc_te}' CREATE (a)-[:HAS_TABLE {{}}]->(b)"
+        )
+        summary["has_table"] += 1
 
         for r in tbl["columns"]:
             cname = r["column_name"]
@@ -142,7 +176,6 @@ def build_physical_meta_refresh(
             lit_c = _build_age_props(p2)
             statements.append(f"CREATE (: `Column` {lit_c})")
             summary["columns"] += 1
-            esc_te = _age_escape_str(teid)
             esc_ce = _age_escape_str(ceid)
             statements.append(
                 f"MATCH (a), (b) WHERE a._physical_vertex_id = '{esc_te}' "

@@ -56,11 +56,13 @@ K-AIR-GraphDB/
 │   │   ├── docker-compose.yml         ← 단독 실행
 │   │   ├── docker-compose.full.yml    ← 서비스 4종 통합 실행
 │   │   └── init/                      ← DDL 초기화 스크립트 (5개)
+│   ├── K-AIR-GraphDB-t2s/             ← t2s·meta_ingest 검증용 별도 스택(포트 분리, E2E compose)
 │   └── age-pgvector/                  ← 원본 네이밍 (참고용)
 │
 ├── libs/age_graph_repository/         ← 코어 Python 라이브러리
 │   ├── connection.py                  ← asyncpg + AGE Cypher 래퍼
-│   ├── repository.py                  ← 온톨로지 그래프 CRUD
+│   ├── repository.py                  ← 온톨로지 그래프 CRUD + 물리 메타 적재 진입
+│   ├── physical_meta/                 ← RDBMS 카탈로그 → AGE 물리 노드/관계(Cypher 빌더, 계약 버전)
 │   ├── cypher_compat.py               ← Neo4j → AGE Cypher 변환
 │   ├── vector_repository.py           ← pgvector 벡터 검색
 │   ├── services/                      ← domain-layer 전환 모듈 (Phase 2)
@@ -68,10 +70,11 @@ K-AIR-GraphDB/
 │   ├── analyzer/                      ← analyzer 전환 모듈 (Phase 4)
 │   └── tests/                         ← 라이브러리 단위·통합 테스트 (94건)
 │
-├── services/                          ← FastAPI 서비스 래퍼 (Phase 5)
+├── services/                          ← FastAPI 서비스 래퍼 (Phase 5) + 메타 인제스트(CLI)
 │   ├── K-AIR-domain-layer/            ← 온톨로지 관리 API
 │   ├── K-AIR-text2sql/                ← 자연어→SQL 변환 API
 │   ├── K-AIR-analyzer/                ← 데이터 분석 자동화 API
+│   ├── meta_ingest_proto/             ← 원천 RDBMS 메타 → t2s_* + ontology_graph 물리층(배치/CLI, 온톨로지 서버 연계)
 │   └── tests/                         ← E2E + LLM 통합 테스트 (35건)
 │
 ├── scripts/                           ← 마이그레이션 스크립트
@@ -80,8 +83,11 @@ K-AIR-GraphDB/
 │   ├── migrate_neo4j_to_kair_graphdb.py ← 통합 마이그레이션 (그래프+RDB)
 │   └── verify_migration.py            ← 마이그레이션 검증
 │
-└── docs/                              ← 보고서
+└── docs/                              ← 보고서 · RDBMS→온톨로지 파이프라인 가이드
     ├── PRD/                           ← 제품 요구사항 정의서 (GraphDB 전환)
+    ├── GUIDE_RDBMS_to_온톨로지_파이프라인.md
+    ├── REPORT_계약분리_다중엔진_검증_20260429.md
+    ├── guide_rdbms_ontology.md
     ├── Phase1_5_통합_개발_보고서.md     ← 전체 Phase 통합 보고서
     ├── LLM_통합_테스트_보고서.md        ← OpenAI 연동 테스트 결과
     └── GraphDB_마이그레이션_검증_보고서.md

@@ -1,0 +1,30 @@
+# meta_ingest / 물리 메타 적재 검증 전용 GraphDB (기존 t2s 컨테이너와 분리)
+# 사용:
+#   cd docker/K-AIR-GraphDB-t2s
+#   docker compose -f docker-compose.meta-ingest-e2e.yml up -d --build
+# 호스트 포트: 15434 → 컨테이너 5432
+services:
+  kair-graphdb-meta-e2e:
+    build:
+      context: ../K-AIR-GraphDB
+      dockerfile: Dockerfile
+    image: kair-graphdb-t2s:pg16-age1.5.0-pgvector0.7.4
+    container_name: kair-graphdb-meta-e2e
+    ports:
+      - "15434:5432"
+    environment:
+      POSTGRES_DB: kair_graphdb_t2s
+      POSTGRES_USER: kair
+      POSTGRES_PASSWORD: kair_pass
+    volumes:
+      - ../K-AIR-GraphDB/init:/docker-entrypoint-initdb.d:ro
+      - kair_graphdb_meta_e2e_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U kair -d kair_graphdb_t2s"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  kair_graphdb_meta_e2e_data:
+    name: kair_graphdb_meta_e2e_data

@@ -422,7 +422,7 @@ class AgeGraphRepository:
         return int(parse_agtype(val) or 0)
 
     # ------------------------------------------------------------------
-    # 물리 메타 (카탈로그 dict → :Table / :Column / FK_TO)
+    # 물리 메타 (meta_ingest_proto 카탈로그 → :Database / :Table / :Column / HAS_TABLE / HAS_COLUMN / FK_TO)
     # ------------------------------------------------------------------
 
     async def apply_physical_meta_catalog(
@@ -433,7 +433,7 @@ class AgeGraphRepository:
     ) -> Dict[str, int]:
         """카탈로그 dict를 AGE 물리층에 반영한다.
 
-        메타 인제스트 등에서 생성한 스냅샷과 동일한 키 구조를 기대한다.
+        키 구조는 ``meta_ingest_proto`` 스냅샷과 동일해야 한다.
         속성 맵은 :mod:`physical_meta.physical_cypher` 의 계약 빌더를 경유한다.
         """
         from .physical_meta.physical_cypher import build_physical_meta_refresh

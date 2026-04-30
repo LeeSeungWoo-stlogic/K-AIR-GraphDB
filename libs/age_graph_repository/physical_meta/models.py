@@ -12,6 +12,23 @@ def column_vertex_eid(db_label: str, schema: str, table_name: str, column: str) 
     return f"meta_ingest:C:{db_label}:{schema}:{table_name}:{column}"
 
 
+def database_vertex_eid(db_label: str) -> str:
+    return f"meta_ingest:D:{db_label}"
+
+
+@dataclass
+class DatabasePhysicalProps:
+    """논리 데이터소스(:Database) — meta_db_label(Option B) + source_engine."""
+
+    meta_db_label: str
+    source_engine: str
+    _meta_ingest: bool
+    _physical_vertex_id: str
+
+    def to_age_property_map(self) -> dict[str, Any]:
+        return {k: v for k, v in asdict(self).items()}
+
+
 @dataclass
 class TablePhysicalProps:
     """:Table 물리 본문 + 운영 확장(_meta_ingest, _physical_vertex_id)."""
@@ -63,6 +80,10 @@ class FkToEdgeProps:
 
 def frozen_table_keys() -> frozenset[str]:
     return frozenset(f.name for f in fields(TablePhysicalProps))
+
+
+def frozen_database_keys() -> frozenset[str]:
+    return frozenset(f.name for f in fields(DatabasePhysicalProps))
 
 
 def frozen_column_keys() -> frozenset[str]:
