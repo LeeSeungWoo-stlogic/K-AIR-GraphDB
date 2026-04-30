@@ -168,4 +168,4 @@ docker exec -it kair-graphdb-t2s psql -U kair -d kair_graphdb_t2s -c "SELECT COU
 | `verify_age_property_keys.sql` | `keys(t)`, 선택 테이블 `keys(c)` |
 | `verify_age_physical_database.sql` | `:Database`·`HAS_TABLE` 건수 샘플 |
 
-**Step 1 완료 검증·인덱스 보관:** [`docs/step1_completion_bundle/`](../../docs/step1_completion_bundle/)
+**Step 1 검증:** `scripts/` 디렉터리 SQL을 사용한다. 선택적 실행 요약 로그는 통합 작업 환경(예: K_Water_v1 `docs/step1_completion_bundle/VERIFICATION_LOG.md`)에 보관할 수 있다.

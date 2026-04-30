@@ -170,4 +170,4 @@ GraphDB 타깃: `TARGET_PG_*` , 논리 데이터소스 라벨: `META_DB_LABEL` (
 - 본 파일은 **전체 4단계 가이드**와 **Step 1 구현 대응**을 한 장에 둔다.
 - 상충 시 **실제 코드**와 `services/meta_ingest_proto/README.md`를 우선한다.
 - 원본 논의 초안은 `docs/guide_rdbms_ontology.md` 에 보관할 수 있으며, **단일 통합본은 본 파일**을 기준으로 갱신한다.
-- **Step 1 완료 검증·경로 인덱스·이기종 목업 범위**는 `docs/step1_completion_bundle/` 에 정리한다.
+- **Step 1 검증용 SQL**은 `services/meta_ingest_proto/scripts/`에 둔다. 이기종 어댑터 목업 범위는 `docs/NON_POSTGRES_ADAPTERS_SCOPE.md`를 본다.

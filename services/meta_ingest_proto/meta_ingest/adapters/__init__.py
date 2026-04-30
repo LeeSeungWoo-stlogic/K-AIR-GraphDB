@@ -1,7 +1,7 @@
 """카탈로그 추출기 팩토리.
 
 실구현: postgres. oracle/mysql/tibero 는 골격(NotImplementedError) — 이기종 실DB·Mongo 등은
-PM 별도 트랙에서 목업/스텁으로 확장 (docs/step1_completion_bundle/NON_POSTGRES_ADAPTERS_SCOPE.md).
+PM 별도 트랙에서 목업/스텁으로 확장 (docs/NON_POSTGRES_ADAPTERS_SCOPE.md).
 """
 
 from __future__ import annotations
